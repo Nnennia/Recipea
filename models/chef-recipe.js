@@ -13,7 +13,7 @@ const recipeSchema = new Schema({
 	description: { type: String }, // Short description
 	ingredients: [{ type: String, required: true }], // Array of ingredients
 	steps: [{ type: String, required: true }], // Array of steps for preparation
-	recipeImage: { type: string },
+	recipeImage: { type: String },
 });
 
 // Chef Schema
