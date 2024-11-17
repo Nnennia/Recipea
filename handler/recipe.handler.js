@@ -50,12 +50,10 @@ const recipe = async (req, res) => {
 			} = req.body;
 			const recipeImage = req.file; // Image uploaded using Multer
 
-			// Validate required fields
 			if (!name || !title || !description || !ingredients || !steps) {
 				return res.status(400).json({ error: "All fields are required" });
 			}
 
-			// Check if the image was uploaded
 			if (!recipeImage) {
 				return res.status(400).json({ error: "Recipe image is required" });
 			}
@@ -79,7 +77,7 @@ const recipe = async (req, res) => {
 			fs.unlinkSync(recipeImage.path);
 
 			// Find the chef by ID
-			const chef = await Chef.findOne(name);
+			const chef = await Chef.findOne({ name });
 			if (!chef) {
 				return res.status(404).json({ error: "Chef not found" });
 			}
@@ -101,6 +99,52 @@ const recipe = async (req, res) => {
 			return res
 				.status(201)
 				.json({ message: "Recipe added successfully", recipe: newRecipe });
+		} else if (action === "getRecipe") {
+			// Pagination and filtering
+			const { page = 1, limit = 10, title, labels, ingredients } = req.query;
+
+			const query = {};
+			if (title) query["recipes.title"] = { $regex: title, $options: "i" };
+			if (labels) query["recipes.labels"] = { $in: labels.split(",") };
+			if (ingredients)
+				query["recipes.ingredients"] = { $in: ingredients.split(",") };
+
+			// Aggregate recipes for filtering and pagination
+			const chefs = await Chef.aggregate([
+				{ $unwind: "$recipes" }, // Flatten recipes array
+				{ $match: query }, // Apply filters
+				{
+					$group: {
+						_id: "$_id",
+						name: { $first: "$name" },
+						email: { $first: "$email" },
+						recipes: { $push: "$recipes" },
+					},
+				},
+				{ $skip: (page - 1) * limit }, // Skip records for pagination
+				{ $limit: parseInt(limit) }, // Limit the number of results
+			]);
+
+			// Count total documents for pagination metadata
+			const totalRecipes = await Chef.aggregate([
+				{ $unwind: "$recipes" },
+				{ $match: query },
+				{ $count: "total" },
+			]);
+
+			const total = totalRecipes.length > 0 ? totalRecipes[0].total : 0;
+			const totalPages = Math.ceil(total / limit);
+
+			return res.status(200).json({
+				message: "Recipes fetched successfully",
+				data: chefs,
+				pagination: {
+					total,
+					page: parseInt(page),
+					limit: parseInt(limit),
+					totalPages,
+				},
+			});
 		} else {
 			return res.status(400).json({ error: "Invalid action" });
 		}
