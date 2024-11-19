@@ -28,7 +28,7 @@ const auth = async (req, res) => {
 		} else if (action === "login") {
 			const { name, password } = req.body;
 			const chef = await Chef.findOne({ name });
-			const validPassword = await bcrypt.compare(password, name.password);
+			const validPassword = await bcrypt.compare(password, chef.password);
 			if (!validPassword || !chef) {
 				return res
 					.status(401)
@@ -42,7 +42,7 @@ const auth = async (req, res) => {
 			return res.status(400).json({ error: "Invalid Action" });
 		}
 	} catch (error) {
-		console.error("Error: error");
+		console.error("Error:", error);
 		return res.status(500).json({ error: "Internal Server Error" });
 	}
 };

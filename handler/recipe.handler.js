@@ -1,44 +1,56 @@
-const Chef = require("../models/chef-recipe");
-const sharp = require("sharp");
 const multer = require("multer");
-const path = require("path");
+const sharp = require("sharp");
 const fs = require("fs");
+const fsExtra = require("fs-extra");
+const path = require("path");
+const Chef = require("../models/chef-recipe");
 
-// Set up Multer storage and file filter for image upload
+// Configure Multer for file upload
 const storage = multer.diskStorage({
 	destination: (req, file, cb) => {
-		cb(null, "uploads/"); // Folder to save uploaded images
+		const uploadPath = path.join(__dirname, "../uploads/originals");
+		fsExtra.ensureDirSync(uploadPath); // Ensure directory exists
+		cb(null, uploadPath);
 	},
 	filename: (req, file, cb) => {
-		cb(null, Date.now() + path.extname(file.originalname)); // Unique file name
+		const timestamp = Date.now();
+		const ext = path.extname(file.originalname).toLowerCase();
+		cb(null, `${timestamp}-${path.basename(file.originalname, ext)}${ext}`);
 	},
 });
 
-const fileFilter = (req, file, cb) => {
-	// Only allow image files
-	if (file.mimetype.startsWith("image/")) {
-		cb(null, true);
-	} else {
-		cb(new Error("Invalid file type, only images are allowed."), false);
+const upload = multer({ storage });
+
+// Resize Image using sharp and fs.readFile/fs.writeFile
+const resizeImage = async (inputPath, outputPath, width, height) => {
+	try {
+		const inputBuffer = await fs.promises.readFile(inputPath); // Read file buffer
+		const outputBuffer = await sharp(inputBuffer)
+			.resize(width, height)
+			.toFormat("jpeg")
+			.jpeg({ quality: 85 })
+			.toBuffer(); // Process image into a buffer
+
+		// Write the resized image buffer to the output path
+		await fs.promises.writeFile(outputPath, outputBuffer);
+	} catch (error) {
+		console.error("Error resizing image:", error);
+		throw error;
 	}
 };
 
-const upload = multer({ storage, fileFilter });
-
-// Image resizing function using Sharp
-const resizeImage = (inputPath, outputPath, width, height) => {
-	return sharp(inputPath)
-		.resize(width, height) // Resize image
-		.toFile(outputPath); // Save resized image
+// Ensure the resized folder exists
+const ensureResizedFolder = () => {
+	const folderPath = path.join(__dirname, "../uploads/resized");
+	fsExtra.ensureDirSync(folderPath);
 };
 
-// Recipe controller with image handling
+// Recipe handler
 const recipe = async (req, res) => {
 	try {
 		const { action } = req.body;
 
 		if (action === "addRecipe") {
-			// Extract data from request
 			const {
 				name,
 				title,
@@ -48,41 +60,42 @@ const recipe = async (req, res) => {
 				ingredients,
 				steps,
 			} = req.body;
-			const recipeImage = req.file; // Image uploaded using Multer
 
-			if (!name || !title || !description || !ingredients || !steps) {
+			const recipeImage = req.file;
+
+			if (
+				!name ||
+				!title ||
+				!description ||
+				ingredients.length === 0 ||
+				steps.length === 0
+			) {
 				return res.status(400).json({ error: "All fields are required" });
 			}
 
 			if (!recipeImage) {
-				return res.status(400).json({ error: "Recipe image is required" });
+				return res.status(400).json({ error: "Recipe image is required." });
 			}
 
-			// Validate that the uploaded file is an image
-			if (!recipeImage.mimetype.startsWith("image/")) {
-				return res
-					.status(400)
-					.json({ error: "Invalid file type, only images are allowed." });
-			}
+			ensureResizedFolder(); // Ensure resized folder exists
+			const resizedFolder = path.join(__dirname, "../uploads/resized");
+			const uniqueFileName = `${Date.now()}-${path.basename(
+				recipeImage.filename,
+				path.extname(recipeImage.filename)
+			)}.jpeg`;
+			const outputImagePath = path.join(resizedFolder, uniqueFileName);
 
-			// Resize the uploaded image to a standard size (e.g., 800x600)
-			const outputImagePath = path.join(
-				"uploads",
-				"resized",
-				recipeImage.filename
-			);
+			// Resize and save image
 			await resizeImage(recipeImage.path, outputImagePath, 800, 600);
 
-			// Optionally, you can remove the original image after resizing (optional)
-			fs.unlinkSync(recipeImage.path);
+			// Optionally, remove the original image if not needed anymore
+			await fs.promises.unlink(recipeImage.path);
 
-			// Find the chef by ID
 			const chef = await Chef.findOne({ name });
 			if (!chef) {
 				return res.status(404).json({ error: "Chef not found" });
 			}
 
-			// Add the new recipe to the chef's recipe list
 			const newRecipe = {
 				title,
 				publicationDate: publicationDate || new Date(),
@@ -90,17 +103,16 @@ const recipe = async (req, res) => {
 				description,
 				ingredients,
 				steps,
-				recipeImage: outputImagePath, // Store the path to the resized image
+				recipeImage: outputImagePath, // Store path of the resized image
 			};
 
-			chef.recipes.push(newRecipe); // Add the recipe to the chef's recipes array
-			await chef.save(); // Save the updated chef document
+			chef.recipes.push(newRecipe);
+			await chef.save();
 
 			return res
 				.status(201)
 				.json({ message: "Recipe added successfully", recipe: newRecipe });
 		} else if (action === "getRecipe") {
-			// Pagination and filtering
 			const { page = 1, limit = 10, title, labels, ingredients } = req.query;
 
 			const query = {};
@@ -109,10 +121,9 @@ const recipe = async (req, res) => {
 			if (ingredients)
 				query["recipes.ingredients"] = { $in: ingredients.split(",") };
 
-			// Aggregate recipes for filtering and pagination
 			const chefs = await Chef.aggregate([
-				{ $unwind: "$recipes" }, // Flatten recipes array
-				{ $match: query }, // Apply filters
+				{ $unwind: "$recipes" },
+				{ $match: query },
 				{
 					$group: {
 						_id: "$_id",
@@ -121,11 +132,10 @@ const recipe = async (req, res) => {
 						recipes: { $push: "$recipes" },
 					},
 				},
-				{ $skip: (page - 1) * limit }, // Skip records for pagination
-				{ $limit: parseInt(limit) }, // Limit the number of results
+				{ $skip: (page - 1) * limit },
+				{ $limit: parseInt(limit) },
 			]);
 
-			// Count total documents for pagination metadata
 			const totalRecipes = await Chef.aggregate([
 				{ $unwind: "$recipes" },
 				{ $match: query },
@@ -134,6 +144,7 @@ const recipe = async (req, res) => {
 
 			const total = totalRecipes.length > 0 ? totalRecipes[0].total : 0;
 			const totalPages = Math.ceil(total / limit);
+			const isLastPage = page * limit >= total;
 
 			return res.status(200).json({
 				message: "Recipes fetched successfully",
@@ -143,15 +154,16 @@ const recipe = async (req, res) => {
 					page: parseInt(page),
 					limit: parseInt(limit),
 					totalPages,
+					isLastPage,
 				},
 			});
 		} else {
 			return res.status(400).json({ error: "Invalid action" });
 		}
 	} catch (error) {
-		console.error("Error in recipeController:", error);
+		console.error("Error in recipeController:", error.message);
 		return res.status(500).json({ error: "An internal server error occurred" });
 	}
 };
 
-module.exports = recipe;
+module.exports = { recipe, upload };
