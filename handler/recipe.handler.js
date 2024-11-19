@@ -158,7 +158,7 @@ const recipe = async (req, res) => {
 				},
 			});
 		} else {
-			return res.status(400).json({ error: "Invalid action" });
+			return res.status(400).json({ error: `Invalid action:${action}` });
 		}
 	} catch (error) {
 		console.error("Error in recipeController:", error.message);

@@ -6,6 +6,6 @@ const recipeRouter = express.Router();
 recipeRouter.post("/recipe", upload.single("recipeImage"), recipe);
 
 // Route for getting recipes (GET request)
-recipeRouter.route("/recipe").get(recipe);
+recipeRouter.get("/recipe", recipe);
 
 module.exports = recipeRouter;
