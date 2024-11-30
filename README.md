@@ -26,8 +26,8 @@ Setup
 
     Clone the repository:
 
-git clone https://github.com/your-repo/recipe-management-api.git
-cd recipe-management-api
+git clone https://github.com/your-repo/Recipea.git
+cd Recipea
 
 Install dependencies:
 
