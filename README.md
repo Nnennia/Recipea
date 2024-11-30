@@ -14,26 +14,6 @@ Features
         Pagination for fetching recipes.
     Error Handling: Centralized error handling middleware.
 
-Folder Structure
-
-project/
-├── uploads/ # Stores uploaded images
-│ ├── originals/ # Original images
-│ ├── resized/ # Resized images
-├── models/ # MongoDB models
-│ └── chef-recipe.js # Schema for Chef and Recipe
-├── routes/ # API route definitions
-│ ├── chef.routes.js # Routes for Chef-related actions
-│ └── recipe.routes.js # Routes for Recipe-related actions
-├── handler/ # Business logic
-│ ├── chef.handler.js
-│ ├── recipe.handler.js
-├── config/ # Configuration files
-│ └── database.js # Database connection
-├── .env # Environment variables
-├── app.js # Entry point
-├── README.md # Project documentation
-
 Requirements
 
     Node.js: v14 or later
