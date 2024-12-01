@@ -52,37 +52,37 @@ The server will be accessible at http://localhost:3000.
 
 #### Signup
 
-Method: POST
+    Method: POST
 
-Endpoint: /auth
+    Endpoint: /auth
 
-Description: Register a new chef.
+    Description: Register a new chef.
 
 #### Login
 
-Method: POST
+    Method: POST
 
-Endpoint: /auth
+    Endpoint: /auth
 
-Description: Login and get a JWT token.
+    Description: Login and get a JWT token.
 
 ### Recipes
 
 #### Add Recipe
 
-Method: POST
+    Method: POST
 
-Endpoint: /recipes
+    Endpoint: /recipes
 
-Description: Add a new recipe (requires image).
+    Description: Add a new recipe (requires image).
 
 #### Get Recipes
 
-Method: GET
+    Method: GET
 
-Endpoint: /recipes
+    Endpoint: /recipes
 
-Description: Fetch and query recipes.
+    Description: Fetch and query recipes.
 
 #### Example Usage
 
