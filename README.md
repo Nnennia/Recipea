@@ -43,55 +43,6 @@ Run the server:
 
     npm start
 
-Recipe Management API
-Overview
-
-This project provides an API for managing recipes and chefs, featuring functionalities like:
-
-    User Authentication: Allows chefs to register and log in securely.
-    Image Upload and Resizing: Handles image uploads, saving original and resized versions in the uploads directory.
-    Recipe Management: Add, retrieve, and query recipes with pagination support.
-    Error Handling: Centralized middleware to handle various error scenarios.
-
-The project is built using Node.js, Express.js, MongoDB, Multer, and Sharp.
-Features
-
-    User Authentication
-    Image Handling
-    Recipe Management
-    Centralized Error Handling
-
-Requirements
-
-    Node.js: v14 or later
-    MongoDB: Local or cloud-based instance
-    Environment Variables:
-        PORT: Port number for the server.
-        JWT_SECRET: Secret key for JWT authentication.
-        MONGO_URI: Connection string for the MongoDB database.
-
-Setup
-
-    Clone the Repository
-
-git clone https://github.com/your-repo/Recipea.git
-cd Recipea
-
-Install Dependencies
-
-npm install
-
-Configure Environment Variables
-Create a .env file in the project root:
-
-PORT=3000
-JWT_SECRET=your-secret-key
-MONGO_URI=your-mongo-database-uri
-
-Start the Server
-
-    npm start
-
 The server will be accessible at http://localhost:3000.
 API Endpoints
 Authentication
