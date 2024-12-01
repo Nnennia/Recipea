@@ -17,7 +17,7 @@ Features
 Requirements
 
     Node.js: v14 or later
-    MongoDB: Local or cloud-based instance
+    MongoDB
     Environment Variables:
         PORT: Port number for the server.
         JWT_SECRET: Secret key for JWT.
