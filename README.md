@@ -4,7 +4,7 @@
 
 This project provides an API for managing recipes and chefs, featuring functionalities like user authentication, image uploads, image resizing, and CRUD operations for recipes. It uses technologies like Node.js, Express.js, MongoDB, Multer, and Sharp.
 
-# Features
+## Features
 
     User Authentication: Supports signup and login for chefs.
     Image Upload and Resizing:
@@ -15,7 +15,7 @@ This project provides an API for managing recipes and chefs, featuring functiona
         Pagination for fetching recipes.
     Error Handling: Centralized error handling middleware.
 
-# Requirements
+## Requirements
 
     Node.js: v14 or later
     MongoDB
@@ -23,7 +23,7 @@ This project provides an API for managing recipes and chefs, featuring functiona
         PORT: Port number for the server.
         JWT_SECRET: Secret key for JWT.
 
-# Setup
+## Setup
 
     Clone the repository:
 
