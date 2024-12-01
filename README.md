@@ -1,9 +1,10 @@
-Recipe Management API
-Overview
+# Recipe Management API
+
+## Overview
 
 This project provides an API for managing recipes and chefs, featuring functionalities like user authentication, image uploads, image resizing, and CRUD operations for recipes. It uses technologies like Node.js, Express.js, MongoDB, Multer, and Sharp.
 
-Features
+# Features
 
     User Authentication: Supports signup and login for chefs.
     Image Upload and Resizing:
@@ -14,7 +15,7 @@ Features
         Pagination for fetching recipes.
     Error Handling: Centralized error handling middleware.
 
-Requirements
+# Requirements
 
     Node.js: v14 or later
     MongoDB
@@ -22,54 +23,62 @@ Requirements
         PORT: Port number for the server.
         JWT_SECRET: Secret key for JWT.
 
-Setup
+# Setup
 
     Clone the repository:
 
-git clone https://github.com/your-repo/Recipea.git
-cd Recipea
+    git clone https://github.com/your-repo/Recipea.git
+    cd Recipea
 
-Install dependencies:
+### Install dependencies:
 
-npm install
+    npm install
 
-Set up environment variables: Create a .env file:
+#### Set up environment variables: Create a .env file:
 
-PORT=3000
-JWT_SECRET=your-secret-key
-MONGO_URI=your-mongo-database-uri
+    PORT=3000
+    JWT_SECRET=your-secret-key
+    MONGO_URI=your-mongo-database-uri
 
-Run the server:
+#### Run the server:
 
     npm start
 
 The server will be accessible at http://localhost:3000.
-API Endpoints
-Authentication
-Signup
+
+## API Endpoints
+
+### Authentication
+
+#### Signup
 
 Method: POST
 Endpoint: /auth
 Description: Register a new chef.
-Login
+
+#### Login
 
 Method: POST
 Endpoint: /auth
 Description: Login and get a JWT token.
-Recipes
-Add Recipe
+
+### Recipes
+
+#### Add Recipe
 
 Method: POST
 Endpoint: /recipes
 Description: Add a new recipe (requires image).
-Get Recipes
+
+#### Get Recipes
 
 Method: GET
 Endpoint: /recipes
 Description: Fetch and query recipes.
 
-Example Usage
-Signup
+#### Example Usage
+
+##### Signup
 
 Request:
 
@@ -87,7 +96,7 @@ Response:
 "message": "Admin created Successfully"
 }
 
-Add Recipe
+##### Add Recipe
 
 Request:
 
@@ -110,7 +119,7 @@ Response:
 "recipe": { ... }
 }
 
-Error Handling
+## Error Handling
 
     400 Bad Request: Missing or invalid data.
     401 Unauthorized: Invalid credentials.
