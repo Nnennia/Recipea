@@ -53,13 +53,17 @@ The server will be accessible at http://localhost:3000.
 #### Signup
 
 Method: POST
+
 Endpoint: /auth
+
 Description: Register a new chef.
 
 #### Login
 
 Method: POST
+
 Endpoint: /auth
+
 Description: Login and get a JWT token.
 
 ### Recipes
@@ -67,13 +71,17 @@ Description: Login and get a JWT token.
 #### Add Recipe
 
 Method: POST
+
 Endpoint: /recipes
+
 Description: Add a new recipe (requires image).
 
 #### Get Recipes
 
 Method: GET
+
 Endpoint: /recipes
+
 Description: Fetch and query recipes.
 
 #### Example Usage
