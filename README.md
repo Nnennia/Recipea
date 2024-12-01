@@ -83,41 +83,43 @@ Description: Fetch and query recipes.
 Request:
 
 POST /auth
-{
-"action": "signup",
-"name": "Chef John",
-"email": "chef.john@example.com",
-"password": "securepassword"
-}
 
-Response:
+    {
+    "action": "signup",
+    "name": "Chef John",
+    "email": "chef.john@example.com",
+    "password": "securepassword"
+    }
 
-{
-"message": "Admin created Successfully"
-}
+    Response:
+
+    {
+    "message": "Admin created Successfully"
+    }
 
 ##### Add Recipe
 
 Request:
 
 POST /recipes
-{
-"action": "addRecipe",
-"name": "Chef John",
-"title": "Spaghetti Bolognese",
-"description": "A classic Italian pasta dish.",
-"ingredients": ["pasta", "tomato sauce", "ground beef"],
-"steps": ["Cook pasta", "Prepare sauce", "Combine pasta and sauce"]
-}
 
-Attach an image file in the form-data key recipeImage.
+    {
+    "action": "addRecipe",
+    "name": "Chef John",
+    "title": "Spaghetti Bolognese",
+    "description": "A classic Italian pasta dish.",
+    "ingredients": ["pasta", "tomato sauce", "ground beef"],
+    "steps": ["Cook pasta", "Prepare sauce", "Combine pasta and sauce"]
+    }
 
-Response:
+    Attach an image file in the form-data key recipeImage.
 
-{
-"message": "Recipe added successfully",
-"recipe": { ... }
-}
+    Response:
+
+    {
+    "message": "Recipe added successfully",
+    "recipe": { ... }
+    }
 
 ## Error Handling
 
